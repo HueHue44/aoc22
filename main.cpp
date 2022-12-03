@@ -37,12 +37,62 @@ void day2(cstr in)
     print("Total score2: %\n", p1);
 }
 
+void day3(cstr in)
+{
+    auto s = split(in, "\n"_s);
+    int p = 0;
+    for(umm i = 0; i < size(s); i++)
+    {
+        auto it = s[i];
+        if(size(it))
+        {
+            auto a = slice(it, 0, size(it) / 2);
+            auto b = slice(it, size(it) / 2);
+            for(umm j = 0; j < size(a); j++)
+            {
+                if(find(b, a[j]) != -1)
+                {
+                    int prio = 0;
+                    if(a[j] >= 'a' && a[j] <= 'z') prio = a[j] - 'a' + 1;
+                    if(a[j] >= 'A' && a[j] <= 'Z') prio = a[j] - 'A' + 1 + 26;
+                    p += prio;
+                    break;
+                }
+            }
+        }
+    }
+    print("Sum: %\n", p);
+    
+    p = 0;
+    for(umm i = 0; i < size(s); i += 3)
+    {
+        if(i + 2 < size(s))
+        {
+            auto a = s[i];
+            auto b = s[i + 1];
+            auto c = s[i + 2];
+            for(umm j = 0; j < size(a); j++)
+            {
+                if(find(b, a[j]) != -1 && find(c, a[j]) != -1)
+                {
+                    int prio = 0;
+                    if(a[j] >= 'a' && a[j] <= 'z') prio = a[j] - 'a' + 1;
+                    if(a[j] >= 'A' && a[j] <= 'Z') prio = a[j] - 'A' + 1 + 26;
+                    p += prio;
+                    break;
+                }
+            }
+        }
+    }
+    print("Sum: %\n", p);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day2.txt"_s);
-        day2(in);
+        dstr in = filestr("day3.txt"_s);
+        day3(in);
     }
     catch(const error& e)
     {
