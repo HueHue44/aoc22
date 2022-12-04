@@ -87,12 +87,37 @@ void day3(cstr in)
     print("Sum: %\n", p);
 }
 
+void day4(cstr in)
+{
+    int p = 0;
+    int p1 = 0;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(size(it))
+              {
+                  auto x = split(it, ","_s);
+                  auto r1 = split(x[0], "-"_s);
+                  auto r2 = split(x[1], "-"_s);
+                  int a = toint<int>(r1[0]);
+                  int b = toint<int>(r1[1]);
+                  int c = toint<int>(r2[0]);
+                  int d = toint<int>(r2[1]);
+                  if(a >= c && b <= d) p++;
+                  else if(c >= a && d <= b) p++;
+                  if(a >= c && a <= d || b >= c && b <= d) p1++;
+                  else if(c >= a && c <= b || d >= a && d <= b) p1++;
+              }
+          });
+    print("Full containment in % assignements\n", p);
+    print("Overlap in % assignements\n", p1);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day3.txt"_s);
-        day3(in);
+        dstr in = filestr("day4.txt"_s);
+        day4(in);
     }
     catch(const error& e)
     {
