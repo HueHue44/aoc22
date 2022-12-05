@@ -108,16 +108,56 @@ void day4(cstr in)
                   else if(c >= a && c <= b || d >= a && d <= b) p1++;
               }
           });
-    print("Full containment in % assignements\n", p);
-    print("Overlap in % assignements\n", p1);
+    print("Full containment in % assignments\n", p);
+    print("Overlap in % assignments\n", p1);
+}
+
+void day5(cstr in)
+{
+    auto a = split(in, "\n\n"_s);
+    dyn<dyn<char>> s;
+    split(a[0], "\n"_s, [&](auto it)
+          {
+              if(size(it) && it[1] != '1')
+              {
+                  s.resize((size(it) + 1) / 4);
+                  for(umm i = 0; i < size(s); i++) if(it[(i * 4) + 1] != ' ') s[i].insert(0, it[(i * 4) + 1]);
+              }
+          });
+    auto s1 = s;
+    split(a[1], "\n"_s, [&](auto it)
+          {
+              if(size(it))
+              {
+                  auto c = split(it, " "_s);
+                  int n = toint<int>(c[1]);
+                  int i0 = toint<int>(c[3]) - 1;
+                  int i1 = toint<int>(c[5]) - 1;
+                  auto& a = s[i0];
+                  auto& b = s[i1];
+                  for(umm i = 0; i < n; i++)
+                  {
+                      b.add(a[size(a) - 1]);
+                      a.remove(size(a) - 1);
+                  }
+                  auto& x = s1[i0];
+                  auto& y = s1[i1];
+                  y.place(slice(x, size(x) - n, n));
+                  x.remove(size(x) - n, n);
+              }
+          });
+    each(s, [&](auto x){ print("%", x[size(x) - 1]); });
+    print("\n");
+    each(s1, [&](auto x){ print("%", x[size(x) - 1]); });
+    print("\n");
 }
 
 int main()
 {
     try
     {
-        dstr in = filestr("day4.txt"_s);
-        day4(in);
+        dstr in = filestr("day5.txt"_s);
+        day5(in);
     }
     catch(const error& e)
     {
