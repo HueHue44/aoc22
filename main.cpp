@@ -152,12 +152,47 @@ void day5(cstr in)
     print("\n");
 }
 
+void day6(cstr in)
+{
+    umm p = (umm)-1;
+    for(umm i = 0; i < size(in) - 4; i++)
+    {
+        auto s = slice(in, i, 4);
+        p = i + size(s);
+        for(umm j = 0; j < size(s); j++)
+        {
+            for(umm k = j; k < size(s); k++)
+            {
+                if(j != k && s[j] == s[k]) p = (umm)-1;
+            }
+        }
+        if(p != -1) break;
+    }
+    print("Start of packet %\n", p);
+    
+    p = (umm)-1;
+    for(umm i = 0; i < size(in) - 14; i++)
+    {
+        auto s = slice(in, i, 14);
+        p = i + size(s);
+        for(umm j = 0; j < size(s); j++)
+        {
+            for(umm k = j; k < size(s); k++)
+            {
+                if(j != k && s[j] == s[k]) p = (umm)-1;
+            }
+        }
+        if(p != -1) break;
+    }
+    print("Start of message %\n", p);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day5.txt"_s);
-        day5(in);
+        dstr in = filestr("day6.txt"_s);
+        day6(in);
     }
     catch(const error& e)
     {
