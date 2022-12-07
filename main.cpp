@@ -187,12 +187,76 @@ void day6(cstr in)
     print("Start of message %\n", p);
 }
 
+void day7(cstr in)
+{
+    dyn<dstr> a;
+    dyn<int> s;
+    dstr d;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(!size(it)) return;
+              auto x = split(it, " "_s);
+              if(x[0] == "$"_s)
+              {
+                  if(x[1] == "cd"_s)
+                  {
+                      if(x[2] == ".."_s)
+                      {
+                          d.remove(size(d) - 1);
+                          umm l = find_last(d, '/');
+                          d.remove(l + 1, size(d) - l - 1);
+                      }
+                      else
+                      {
+                          if(x[2] == "/"_s)
+                          {
+                              d = "/"_s;
+                          }
+                          else
+                          {
+                              d.place(x[2]);
+                              d.add('/');
+                          }
+                          if(find(a, d) == -1)
+                          {
+                              a.add(d);
+                              s.add(0);
+                          }
+                      }
+                  }
+              }
+              else if(x[0] == "dir"_s)
+              {
+              }
+              else
+              {
+                  int b = toint<int>(x[0]);
+                  for(umm i = 0; i < size(a); i++)
+                  {
+                      if(match(d, a[i]) == 0)
+                      {
+                          s[i] += b;
+                      }
+                  }
+              }
+          });
+    int p = 0;
+    int p1 = 70000000;
+    for(umm i = 0; i < size(a); i++)
+    {
+        if(s[i] <= 100000) p += s[i];
+        if(70000000 - s[0] + s[i] >= 30000000) p1 = min(p1, s[i]);
+    }
+    print("Total size: %\n", p);
+    print("Smallest total: %\n", p1);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day6.txt"_s);
-        day6(in);
+        dstr in = filestr("day7.txt"_s);
+        day7(in);
     }
     catch(const error& e)
     {
