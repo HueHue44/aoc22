@@ -251,12 +251,78 @@ void day7(cstr in)
     print("Smallest total: %\n", p1);
 }
 
+void day8(cstr in)
+{
+    sta<sta<int, 99>, 99> m;
+    for(umm y = 0; y < 99; y++)
+    {
+        for(umm x = 0; x < 99; x++)
+        {
+            m[y][x] = in[y * 100 + x] - '0';
+        }
+    }
+    int p = 0;
+    for(umm y = 0; y < 99; y++)
+    {
+        for(umm x = 0; x < 99; x++)
+        {
+            bool v = false;
+            umm i = 0;
+            while(i < x && m[y][i] < m[y][x]) i++;
+            if(i == x)
+            {
+                p++;
+                continue;
+            }
+            i = 98;
+            while(i > x && m[y][i] < m[y][x]) i--;
+            if(i == x)
+            {
+                p++;
+                continue;
+            }
+            i = 0;
+            while(i < y && m[i][x] < m[y][x]) i++;
+            if(i == y)
+            {
+                p++;
+                continue;
+            }
+            i = 98;
+            while(i > y && m[i][x] < m[y][x]) i--;
+            if(i == y)
+            {
+                p++;
+                continue;
+            }
+        }
+    }
+    print("Total visible trees: %\n", p);
+    umm p1 = 0;
+    for(umm y = 0; y < 99; y++)
+    {
+        for(umm x = 0; x < 99; x++)
+        {
+            umm a = x + (x != 98);
+            while(a < 98 && m[y][a] < m[y][x]) a++;
+            umm b = x - (x != 0);
+            while(b > 0 && m[y][b] < m[y][x]) b--;
+            umm c = y + (y != 98);
+            while(c < 98 && m[c][x] < m[y][x]) c++;
+            umm d = y - (y != 0);
+            while(d > 0 && m[d][x] < m[y][x]) d--;
+            p1 = max(p1, (a - x) * (x - b) * (c - y) * (y - d));
+        }
+    }
+    print("Highest score: %\n", p1);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day7.txt"_s);
-        day7(in);
+        dstr in = filestr("day8.txt"_s);
+        day8(in);
     }
     catch(const error& e)
     {
