@@ -266,7 +266,6 @@ void day8(cstr in)
     {
         for(umm x = 0; x < 99; x++)
         {
-            bool v = false;
             umm i = 0;
             while(i < x && m[y][i] < m[y][x]) i++;
             if(i == x)
@@ -317,12 +316,83 @@ void day8(cstr in)
     print("Highest score: %\n", p1);
 }
 
+void day9(cstr in)
+{
+    {
+        dyn<sta<int, 2>> v;
+        sta h = {{ 0, 0 }};
+        sta t = {{ 0, 0 }};
+        v.add(t);
+        split(in, "\n"_s, [&](auto it)
+              {
+                  if(!size(it)) return;
+                  auto x = split(it, " "_s);
+                  sta m = {{0, 0}};
+                  if(x[0] == "L"_s) m[0] -= 1;
+                  if(x[0] == "R"_s) m[0] += 1;
+                  if(x[0] == "D"_s) m[1] -= 1;
+                  if(x[0] == "U"_s) m[1] += 1;
+                  int n = toint<int>(x[1]);
+                  for(umm i = 0; i < n; i++)
+                  {
+                      h += m;
+                      auto d = h - t;
+                      if(d[0] < -1) t = h + sta{{ 1, 0 }};
+                      if(d[0] > 1)  t = h - sta{{ 1, 0 }};
+                      if(d[1] < -1) t = h + sta{{ 0, 1 }};
+                      if(d[1] > 1)  t = h - sta{{ 0, 1 }};
+                      if(find(v, t) == -1) v.add(t);
+                  }
+              });
+        print("Unique locations: %\n", size(v));
+    }
+    {
+        dyn<sta<int, 2>> v;
+        sta<sta<int, 2>, 10> r{};
+        v.add(r[size(r) - 1]);
+        split(in, "\n"_s, [&](auto it)
+              {
+                  if(!size(it)) return;
+                  auto x = split(it, " "_s);
+                  sta m = {{0, 0}};
+                  if(x[0] == "L"_s) m[0] -= 1;
+                  if(x[0] == "R"_s) m[0] += 1;
+                  if(x[0] == "D"_s) m[1] -= 1;
+                  if(x[0] == "U"_s) m[1] += 1;
+                  int n = toint<int>(x[1]);
+                  for(umm i = 0; i < n; i++)
+                  {
+                      r[0] += m;
+                      for(umm j = 1; j < size(r); j++)
+                      {
+                          auto d = r[j - 1] - r[j];
+                          if(abs(d[0]) == 2 && abs(d[1]) == 2)
+                          {
+                              d[0] /= 2;
+                              d[1] /= 2;
+                              r[j] += d;
+                          }
+                          else
+                          {
+                              if(d[0] < -1) r[j] = r[j - 1] + sta{{ 1, 0 }};
+                              if(d[0] > 1)  r[j] = r[j - 1] - sta{{ 1, 0 }};
+                              if(d[1] < -1) r[j] = r[j - 1] + sta{{ 0, 1 }};
+                              if(d[1] > 1)  r[j] = r[j - 1] - sta{{ 0, 1 }};
+                          }
+                      }
+                      if(find(v, r[size(r) - 1]) == -1) v.add(r[size(r) - 1]);
+                  }
+              });
+        print("Unique locations: %\n", size(v));
+    }
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day8.txt"_s);
-        day8(in);
+        dstr in = filestr("day9.txt"_s);
+        day9(in);
     }
     catch(const error& e)
     {
