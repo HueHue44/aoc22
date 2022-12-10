@@ -387,12 +387,63 @@ void day9(cstr in)
     }
 }
 
+void day10(cstr in)
+{
+    int p = 0;
+    int c = 0;
+    int x = 1;
+    int t = 20;
+    dstr o;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(!size(it)) return;
+              auto s = split(it, " "_s);
+              int a = 0;
+              if(s[0] == "addx"_s)
+              {
+                  a = toint<int>(s[1]);
+                  c += 2;
+                  if((int)(size(o) % 40) >= x - 1 && (int)(size(o) % 40) <= x + 1)
+                  {
+                      o.add('#');
+                  }
+                  else
+                  {
+                      o.add('.');
+                  }
+              }
+              else
+              {
+                  c++;
+              }
+              if(c >= t)
+              {
+                  p += t * x;
+                  t += 40;
+              }
+              
+              if((int)(size(o) % 40) >= x - 1 && (int)(size(o) % 40) <= x + 1)
+              {
+                  o.add('#');
+              }
+              else
+              {
+                  o.add('.');
+              }
+              
+              x += a;
+          });
+    for(umm i = 40; i < size(o); i += 40) o.insert(i++, '\n');
+    print("Sum of signal strength: %\n", p);
+    print("%\n", o);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day9.txt"_s);
-        day9(in);
+        dstr in = filestr("day10.txt"_s);
+        day10(in);
     }
     catch(const error& e)
     {
