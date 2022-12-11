@@ -438,12 +438,95 @@ void day10(cstr in)
     print("%\n", o);
 }
 
+void day11(cstr in)
+{
+    auto t = split(in, "\n\n"_s);
+    dyn<dyn<u64>> m;
+    dyn<dyn<u64>> m1;
+    u64 mod = 1;
+    for(umm i = 0; i < size(t); i++)
+    {
+        auto x = split(t[i], "\n"_s);
+        auto y = split(x[1], ": "_s);
+        auto n = split(y[1], ", "_s);
+        dyn<u64> a;
+        each(n, [&](const auto& it){ a.add(toint<u64>(it)); });
+        m.add(a);
+        m1.add(a);
+        mod *= toint<u64>(split(x[3], "by "_s)[1]);
+    }
+    dyn<u64> p(size(m));
+    for(umm r = 0; r < 20; r++)
+    {
+        for(umm i = 0; i < size(t); i++)
+        {
+            auto& l = m[i];
+            auto s = split(t[i], "\n"_s);
+            auto o = split(s[2], " "_s);
+            auto d1 = split(s[3], "by "_s);
+            auto x1 = split(s[4], "monkey "_s);
+            auto y1 = split(s[5], "monkey "_s);
+            auto d = toint<u64>(d1[1]);
+            auto x = toint<u64>(x1[1]);
+            auto y = toint<u64>(y1[1]);
+            while(size(l))
+            {
+                u64 a = l[0];
+                l.remove(0);
+                u64 b = 0;
+                if(o[7] == "old"_s) b = a;
+                else b = toint<u64>(o[7]);
+                if(o[6] == "*"_s) a = a * b;
+                else a = a + b;
+                a /= 3;
+                if((a % d) == 0) m[x].add(a);
+                else m[y].add(a);
+                p[i]++;
+            }
+        }
+    }
+    qsort(p, [](auto a, auto b){ return b < a; });
+    print("Level of monkey business: %\n", p[0] * p[1]);
+    dyn<u64> p1(size(m1));
+    for(umm r = 0; r < 10000; r++)
+    {
+        for(umm i = 0; i < size(t); i++)
+        {
+            auto& l = m1[i];
+            auto s = split(t[i], "\n"_s);
+            auto o = split(s[2], " "_s);
+            auto d1 = split(s[3], "by "_s);
+            auto x1 = split(s[4], "monkey "_s);
+            auto y1 = split(s[5], "monkey "_s);
+            auto d = toint<u64>(d1[1]);
+            auto x = toint<u64>(x1[1]);
+            auto y = toint<u64>(y1[1]);
+            while(size(l))
+            {
+                u64 a = l[0];
+                l.remove(0);
+                u64 b = 0;
+                if(o[7] == "old"_s) b = a;
+                else b = toint<u64>(o[7]);
+                if(o[6] == "*"_s) a = a * b;
+                else a = a + b;
+                a %= mod;
+                if((a % d) == 0) m1[x].add(a);
+                else m1[y].add(a);
+                p1[i]++;
+            }
+        }
+    }
+    qsort(p1, [](auto a, auto b){ return b < a; });
+    print("Level of monkey business: %\n", p1[0] * p1[1]);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day10.txt"_s);
-        day10(in);
+        dstr in = filestr("day11.txt"_s);
+        day11(in);
     }
     catch(const error& e)
     {
