@@ -521,12 +521,64 @@ void day11(cstr in)
     print("Level of monkey business: %\n", p1[0] * p1[1]);
 }
 
+void day12(cstr in)
+{
+    auto f = [&](umm x, umm y)
+    {
+        auto g = split(slice(in, 0, size(in) - 1), "\n"_s);
+        g[20][0] = 'a';
+        umm w = size(g[0]);
+        umm h = size(g);
+        dyn<sta<umm, 4>> q;
+        q.add({{ x, y, 'a', 0 }});
+        umm p = (umm)-1;
+        while(size(q))
+        {
+            auto it = q[0];
+            q.remove(0);
+            if(it[0] < w && it[1] < h && g[it[1]][it[0]] <= it[2] + 1)
+            {
+                umm d = g[it[1]][it[0]];
+                if(d == 'E')
+                {
+                    p = it[3];
+                    break;
+                }
+                g[it[1]][it[0]]= '~';
+                q.add({{ it[0] - 1, it[1], d, it[3] + 1 }});
+                q.add({{ it[0] + 1, it[1], d, it[3] + 1 }});
+                q.add({{ it[0], it[1] - 1, d, it[3] + 1 }});
+                q.add({{ it[0], it[1] + 1, d, it[3] + 1 }});
+            }
+        }
+        return p;
+    };
+    print("Fewest steps: %\n", f(0, 20));
+    umm p = (umm)-1;
+    umm x = 0;
+    umm y = 0;
+    for(umm i = 0; i < size(in); i++)
+    {
+        if(in[i] == '\n')
+        {
+            x = 0;
+            y++;
+        }
+        else
+        {
+            if(in[i] == 'a' || in[i] == 'S') p = min(p, f(x, y));
+            x++;
+        }
+    }
+    print("Fewest steps overall: %\n", p);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day11.txt"_s);
-        day11(in);
+        dstr in = filestr("day12.txt"_s);
+        day12(in);
     }
     catch(const error& e)
     {
