@@ -573,12 +573,70 @@ void day12(cstr in)
     print("Fewest steps overall: %\n", p);
 }
 
+void day13(cstr in)
+{
+    auto csv = [&](cstr x)
+    {
+        dyn<cstr> r;
+        umm c = 0;
+        umm s = 1;
+        for(umm i = 1; i < size(x); i++)
+        {
+            if(x[i] == '[') c++;
+            else if(x[i] == ']') c--;
+            else if(x[i] == ',' && c == 0)
+            {
+                r.add(slice(x, s, i - s));
+                s = i + 1;
+            }
+        }
+        if(size(x) - s - 1) r.add(slice(x, s, size(x) - s - 1));
+        return r;
+    };
+    
+    auto cmp = [&](auto f, cstr a, cstr b) -> int
+    {
+        if(a[0] == '[' && b[0] == '[')
+        {
+            auto ac = csv(a);
+            auto bc = csv(b);
+            for(umm i = 0; i < size(ac) && i < size(bc); i++)
+            {
+                int r = f(f, ac[i], bc[i]);
+                if(r) return r;
+            }
+            return size(ac) < size(bc) ? -1 : size(bc) < size(ac) ? 1 : 0;
+        }
+        else
+        {
+            if(b[0] == '[') return f(f, fmt("[%]", a), b);
+            if(a[0] == '[') return f(f, a, fmt("[%]", b));
+            return toint(a) < toint(b) ? -1 : toint(b) < toint(a) ? 1 : 0;
+        }
+    };
+    
+    dyn<dstr> all;
+    umm p = 0;
+    auto x = split(in, "\n\n"_s);
+    for(umm i = 0; i < size(x); i++)
+    {
+        auto s = split(x[i], "\n"_s);
+        if(cmp(cmp, s[0], s[1]) == -1) p += i + 1;
+        all.add(s[0], s[1]);
+    }
+    print("Sum of indices: %\n", p);
+    
+    all.add("[[2]]"_s, "[[6]]"_s);
+    qsort(all, [&](const auto& a, const auto& b){ return cmp(cmp, a, b) == -1; });
+    print("Decoder key: %\n", (find(all, "[[2]]"_s) + 1) * (find(all, "[[6]]"_s) + 1));
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day12.txt"_s);
-        day12(in);
+        dstr in = filestr("day13.txt"_s);
+        day13(in);
     }
     catch(const error& e)
     {
