@@ -631,12 +631,75 @@ void day13(cstr in)
     print("Decoder key: %\n", (find(all, "[[2]]"_s) + 1) * (find(all, "[[6]]"_s) + 1));
 }
 
+void day14(cstr in)
+{
+    dyn<sta<int, 2>> g;
+    int y = 0;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(size(it))
+              {
+                  auto c = split(it, " -> "_s);
+                  for(umm i = 1; i < size(c); i++)
+                  {
+                      sta<int, 2> a = { toint(split(c[i - 1], ","_s)[0]), toint(split(c[i - 1], ","_s)[1]) };
+                      sta<int, 2> b = { toint(split(c[i], ","_s)[0]), toint(split(c[i], ","_s)[1]) };
+                      y = max(y, a[1]);
+                      y = max(y, b[1]);
+                      auto d = b - a;
+                      d[0] = sign(d[0]);
+                      d[1] = sign(d[1]);
+                      g.add(a);
+                      while(a != b)
+                      {
+                          a += d;
+                          g.add(a);
+                      }
+                  }
+              }
+          });
+    auto g1 = g;
+    umm p = 0;
+    sta<int, 2> x = { 500, 0 };
+    while(x[1] < y)
+    {
+        if(find(g, x + sta<int, 2>{ 0, 1 }) == -1)       x += sta<int, 2>{ 0, 1 };
+        else if(find(g, x + sta<int, 2>{ -1, 1 }) == -1) x += sta<int, 2>{ -1, 1 };
+        else if(find(g, x + sta<int, 2>{ 1, 1 }) == -1)  x += sta<int, 2>{ 1, 1 };
+        else
+        {
+            p++;
+            g.add(x);
+            x = { 500, 0 };
+        }
+    }
+    print("Units of sand: %\n", p);
+    
+    g = g1;
+    umm p1 = 0;
+    x = { 500, 0 };
+    while(true)
+    {
+        if(find(g, x + sta<int, 2>{ 0, 1 }) == -1 && x[1] < y + 1)       x += sta<int, 2>{ 0, 1 };
+        else if(find(g, x + sta<int, 2>{ -1, 1 }) == -1 && x[1] < y + 1) x += sta<int, 2>{ -1, 1 };
+        else if(find(g, x + sta<int, 2>{ 1, 1 }) == -1 && x[1] < y + 1)  x += sta<int, 2>{ 1, 1 };
+        else
+        {
+            p1++;
+            g.add(x);
+            if(x == sta<int, 2>{ 500, 0 }) break;
+            x = { 500, 0 };
+        }
+    }
+    print("Units of sand: %\n", p1);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day13.txt"_s);
-        day13(in);
+        dstr in = filestr("day14.txt"_s);
+        day14(in);
     }
     catch(const error& e)
     {
