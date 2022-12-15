@@ -611,7 +611,7 @@ void day13(cstr in)
         {
             if(b[0] == '[') return f(f, fmt("[%]", a), b);
             if(a[0] == '[') return f(f, a, fmt("[%]", b));
-            return toint(a) < toint(b) ? -1 : toint(b) < toint(a) ? 1 : 0;
+            return toint<int>(a) < toint<int>(b) ? -1 : toint<int>(b) < toint<int>(a) ? 1 : 0;
         }
     };
     
@@ -642,8 +642,8 @@ void day14(cstr in)
                   auto c = split(it, " -> "_s);
                   for(umm i = 1; i < size(c); i++)
                   {
-                      sta<int, 2> a = { toint(split(c[i - 1], ","_s)[0]), toint(split(c[i - 1], ","_s)[1]) };
-                      sta<int, 2> b = { toint(split(c[i], ","_s)[0]), toint(split(c[i], ","_s)[1]) };
+                      sta<int, 2> a = { toint<int>(split(c[i - 1], ","_s)[0]), toint<int>(split(c[i - 1], ","_s)[1]) };
+                      sta<int, 2> b = { toint<int>(split(c[i], ","_s)[0]), toint<int>(split(c[i], ","_s)[1]) };
                       y = max(y, a[1]);
                       y = max(y, b[1]);
                       auto d = b - a;
@@ -694,12 +694,105 @@ void day14(cstr in)
     print("Units of sand: %\n", p1);
 }
 
+void day15(cstr in)
+{
+    dyn<sta<int, 2>> s;
+    dyn<sta<int, 2>> b;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(size(it))
+              {
+                  auto x = split(it, "x="_s);
+                  auto y = split(it, "y="_s);
+                  s.add(sta<int, 2>{ toint<int>(split(x[1], ","_s)[0]), toint<int>(split(y[1], ":"_s)[0]) });
+                  b.add(sta<int, 2>{ toint<int>(split(x[2], ","_s)[0]), toint<int>(y[2]) });
+              }
+          });
+    {
+        int y = 2000000;
+        dyn<sta<int, 2>> r;
+        for(umm i = 0; i < size(s); i++)
+        {
+            auto m = abs(s[i][0] - b[i][0]) + abs(s[i][1] - b[i][1]);
+            int d = m - abs(y - s[i][1]);
+            if(d >= 0)
+            {
+                int x0 = s[i][0] - d;
+                int x1 = s[i][0] + d;
+                r.add({{ x0, x1 }});
+            }
+        }
+        for(umm i = 0; i < size(r); i++)
+        {
+            for(umm j = 0; j < size(r); j++)
+            {
+                if(i == j) continue;
+                auto& a = r[i];
+                auto& b = r[j];
+                if((a[0] >= b[0] && a[0] <= b[1]) || (a[1] >= b[0] && a[1] <= b[1]) ||
+                   (b[0] >= a[0] && b[0] <= a[1]) || (b[1] >= a[0] && b[1] <= a[1]))
+                {
+                    a[0] = min(a[0], b[0]);
+                    a[1] = max(a[1], b[1]);
+                    r.remove(j);
+                    i = 0;
+                    break;
+                }
+            }
+        }
+        int p = 0;
+        for(umm i = 0; i < size(r); i++) p += r[i][1] - r[i][0];
+        print("Positions that do not contain a beacon: %\n", p);
+    }
+    
+    for(int y = 0; y < 4000000; y++)
+    {
+        dyn<sta<int, 2>> r;
+        for(umm i = 0; i < size(s); i++)
+        {
+            auto m = abs(s[i][0] - b[i][0]) + abs(s[i][1] - b[i][1]);
+            int d = m - abs(y - s[i][1]);
+            if(d >= 0)
+            {
+                int x0 = s[i][0] - d;
+                int x1 = s[i][0] + d;
+                r.add({{ x0, x1 }});
+            }
+        }
+        for(umm i = 0; i < size(r); i++)
+        {
+            for(umm j = 0; j < size(r); j++)
+            {
+                if(i == j) continue;
+                auto& a = r[i];
+                auto& b = r[j];
+                if((a[0] >= b[0] && a[0] <= b[1]) || (a[1] >= b[0] && a[1] <= b[1]) ||
+                   (b[0] >= a[0] && b[0] <= a[1]) || (b[1] >= a[0] && b[1] <= a[1]))
+                {
+                    a[0] = min(a[0], b[0]);
+                    a[1] = max(a[1], b[1]);
+                    r.remove(j);
+                    i = 0;
+                    break;
+                }
+            }
+        }
+        for(umm i = 0; i < size(r); i++)
+        {
+            if(r[i][1] >= 0 && r[i][1] <= 4000000)
+            {
+                print("Tuning frequency: %\n", (s64)(r[i][1] + 1) * 4000000 + y);
+            }
+        }
+    }
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day14.txt"_s);
-        day14(in);
+        dstr in = filestr("day15.txt"_s);
+        day15(in);
     }
     catch(const error& e)
     {
