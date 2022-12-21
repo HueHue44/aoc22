@@ -894,12 +894,79 @@ void day17(cstr in)
     print("Units: %, %\n", h, p);
 }
 
+void day18(cstr in)
+{
+    using point = sta<int, 3>;
+    map<point, bool> c;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(size(it))
+              {
+                  auto x = split(it, ","_s);
+                  point p{toint<int>(x[0]), toint<int>(x[1]), toint<int>(x[2])};
+                  c[p] = false;
+              }
+          });
+    umm p = 0;
+    each(c, [&](auto it)
+         {
+             auto x = it.get<0>();
+             p += !c.has(x + point{  1,  0,  0 });
+             p += !c.has(x + point{ -1,  0,  0 });
+             p += !c.has(x + point{  0,  1,  0 });
+             p += !c.has(x + point{  0, -1,  0 });
+             p += !c.has(x + point{  0,  0,  1 });
+             p += !c.has(x + point{  0,  0, -1 });
+         });
+    print("Total surface area: %\n", p);
+    
+    auto f = [&](point p)
+    {
+        if(c.has(p)) return true;
+        map<point, bool> v;
+        dyn<point> q;
+        auto visit = [&](point x)
+        {
+            if(!c.has(x) && !v.has(x))
+            {
+                q.add(x);
+                v[x] = true;
+            }
+        };
+        visit(p);
+        while(size(q) && size(q) < 1000)
+        {
+            auto x = q[size(q) - 1];
+            q.remove(size(q) - 1);
+            visit(x + point{  1,  0,  0 });
+            visit(x + point{ -1,  0,  0 });
+            visit(x + point{  0,  1,  0 });
+            visit(x + point{  0, -1,  0 });
+            visit(x + point{  0,  0,  1 });
+            visit(x + point{  0,  0, -1 });
+        }
+        return size(q) < 1000;
+    };
+    umm p1 = 0;
+    each(c, [&](auto it)
+         {
+             auto x = it.get<0>();
+             p1 += !f(x + point{  1,  0,  0 });
+             p1 += !f(x + point{ -1,  0,  0 });
+             p1 += !f(x + point{  0,  1,  0 });
+             p1 += !f(x + point{  0, -1,  0 });
+             p1 += !f(x + point{  0,  0,  1 });
+             p1 += !f(x + point{  0,  0, -1 });
+         });
+    print("Total exterior surface area: %\n", p1);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day17.txt"_s);
-        day17(in);
+        dstr in = filestr("day18.txt"_s);
+        day18(in);
     }
     catch(const error& e)
     {
