@@ -833,12 +833,73 @@ void day16(cstr in)
     print("Total pressure released: %\n", y);
 }
 
+void day17(cstr in)
+{
+    using point = sta<s64, 2>;
+    dyn<sta<s64, 7>> g(umm(100000));
+    dyn<dyn<point>> r;
+    r.add(mdyn(point{ 0, 0 }, point{ 1, 0 }, point{ 2, 0 }, point{ 3, 0 }));
+    r.add(mdyn(point{ 1, 0 }, point{ 0, 1 }, point{ 1, 1 }, point{ 2, 1 }, point{ 1, 2 }));
+    r.add(mdyn(point{ 0, 0 }, point{ 1, 0 }, point{ 2, 0 }, point{ 2, 1 }, point{ 2, 2 }));
+    r.add(mdyn(point{ 0, 0 }, point{ 0, 1 }, point{ 0, 2 }, point{ 0, 3 }));
+    r.add(mdyn(point{ 0, 0 }, point{ 1, 0 }, point{ 0, 1 }, point{ 1, 1 }));
+    s64 h = 0;
+    s64 p = 0;
+    s64 d = 0;
+    for(umm i = 0; i < 1870 + 1575; i++)
+    {
+        auto a = r[i % size(r)];
+        point c{ 2, p + 3 };
+        while(true)
+        {
+            auto n = c;
+            n[0] += in[d] == '<' ? -1 : 1;
+            d = (d + 1) % (size(in) - 1);
+            s64 b = 0;
+            each(a, [&](auto it){ b = max(b, it[0]); });
+            if(n[0] < 0 || n[0] + b >= size(g[0])) n = c;
+            for(umm j = 0; j < size(a); j++)
+            {
+                auto t = n + a[j];
+                if(g[t[1]][t[0]]) n = c;
+            }
+            c = n;
+            n[1]--;
+            if(n[1] < 0) n = c;
+            for(umm j = 0; j < size(a); j++)
+            {
+                auto t = n + a[j];
+                if(g[t[1]][t[0]]) n = c;
+            }
+            if(n == c) break;
+            c = n;
+        }
+        for(umm j = 0; j < size(a); j++)
+        {
+            auto t = c + a[j];
+            g[t[1]][t[0]] = 1;
+            p = max(p, t[1] + 1);
+        }
+        bool row = true;
+        for(umm j = 0; j < size(g[0]); j++) if(g[p - 1][j] == 0) row = false;
+        if(row)
+        {
+            print("Spliting row at %, after % rocks, at input %\n", p, i, d);
+            h += p;
+            p = 0;
+            g.resize(0);
+            g.resize(umm(100000));
+        }
+    }
+    print("Units: %, %\n", h, p);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day16.txt"_s);
-        day16(in);
+        dstr in = filestr("day17.txt"_s);
+        day17(in);
     }
     catch(const error& e)
     {
