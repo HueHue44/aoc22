@@ -787,12 +787,58 @@ void day15(cstr in)
     }
 }
 
+void day16(cstr in)
+{
+    dyn<dstr> v;
+    dyn<int> r;
+    dyn<dyn<dstr>> p;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(size(it))
+              {
+                  auto x = split(it, " "_s);
+                  v.add(x[1]);
+                  r.add(toint<int>(split(slice(x[4], 0, size(x[4]) - 1), "="_s)[1]));
+                  auto y = split(it, "valves "_s);
+                  if(size(y) < 2) y = split(it, "valve "_s);
+                  p.add(split(y[1], ", "_s));
+              }
+          });
+    umm y = 0;
+    auto visit = [&](auto f, umm vi, umm m, umm g = 0, const dyn<umm>& d = {}, umm pi = -1) -> void
+    {
+        if(m == 0)
+        {
+            if(g > y)
+            {
+                y = g;
+                print("New highest: %\n", y);
+            }
+            return;
+        }
+        each(p[vi], [&](const auto& it)
+             {
+                 umm ni = find(v, it);
+                 if(ni != pi) f(f, ni, m - 1, g, d, vi);
+             });
+        if(find(d, vi) == -1)
+        {
+            auto nd = d;
+            nd.add(vi);
+            f(f, vi, m - 1, g + (m - 1) * r[vi], nd, vi);
+        }
+    };
+    
+    visit(visit, find(v, "AA"_s), 30);
+    print("Total pressure released: %\n", y);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day15.txt"_s);
-        day15(in);
+        dstr in = filestr("day16.txt"_s);
+        day16(in);
     }
     catch(const error& e)
     {
