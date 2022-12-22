@@ -1137,12 +1137,176 @@ void day21(cstr in)
     }
 }
 
+void day22(cstr in)
+{
+    using point = sta<int, 2>;
+    map<point, bool> m;
+    auto a = split(in, "\n\n"_s);
+    auto b = split(a[0], "\n"_s);
+    for(umm y = 0; y < size(b); y++)
+    {
+        for(umm x = 0; x < size(b[y]); x++)
+        {
+            if(b[y][x] != ' ') m[point{ int(x), int(y) }] = b[y][x] == '#';
+        }
+    }
+    {
+        auto c = slice(a[1], 0, size(a[1]) - 1);
+        point d{ 1, 0 };
+        point p{ 0, 0 };
+        while(!m.has(p)) p += d;
+        while(size(c))
+        {
+            umm n = min(find(c, 'L'), find(c, 'R'), size(c));
+            int s = toint<int>(slice(c, 0, n));
+            for(umm i = 0; i < s; i++)
+            {
+                point u = p + d;
+                if(!m.has(u))
+                {
+                    u = p;
+                    while(m.has(u - d)) u -= d;
+                }
+                verify(m.has(u));
+                if(m[u]) u = p;
+                p = u;
+            }
+            if(n < size(c))
+            {
+                if(c[n] == 'L') d = point{ d[1], -d[0] };
+                if(c[n] == 'R') d = point{ -d[1], d[0] };
+            }
+            c = slice(c, min(n + 1, size(c)));
+        }
+        int f = 0;
+        if(d[0] == -1) f = 2;
+        if(d[1] == 1)  f = 1;
+        if(d[1] == -1) f = 3;
+        print("Password: %\n", 1000 * (p[1] + 1) + 4 * (p[0] + 1) + f);
+    }
+    {
+        auto c = slice(a[1], 0, size(a[1]) - 1);
+        point d{ 1, 0 };
+        point p{ 0, 0 };
+        while(!m.has(p)) p += d;
+        while(size(c))
+        {
+            umm n = min(find(c, 'L'), find(c, 'R'), size(c));
+            int s = toint<int>(slice(c, 0, n));
+            for(umm i = 0; i < s; i++)
+            {
+                point u = p + d;
+                point r = d;
+                if(!m.has(u))
+                {
+                    // Hard-coded transitions!
+                    if(p[0] < 100 && p[1] == 0 && d[1] == -1)
+                    {
+                        u = point{ 0, p[0] + 100 };
+                        r = point{ 1, 0 };
+                    }
+                    if(p[0] == 0 && p[1] >= 150 && d[0] == -1)
+                    {
+                        u = point{ p[1] - 100, 0 };
+                        r = point{ 0, 1 };
+                    }
+                    
+                    if(p[0] >= 100 && p[1] == 0 && d[1] == -1)
+                    {
+                        u = point{ p[0] - 100, 199 };
+                        r = point{ 0, -1 };
+                    }
+                    if(p[0] < 50 && p[1] == 199 && d[1] == 1)
+                    {
+                        u = point{ p[0] + 100, 0 };
+                        r = point{ 0, 1 };
+                    }
+                    
+                    if(p[0] >= 100 && p[1] < 50 && d[0] == 1)
+                    {
+                        u = point{ 99, 149 - p[1] };
+                        r = point{ -1, 0 };
+                    }
+                    if(p[0] >= 50 && p[1] >= 100 && d[0] == 1)
+                    {
+                        u = point{ 149, 149 - p[1] };
+                        r = point{ -1, 0 };
+                    }
+                    
+                    if(p[0] >= 100 && p[1] < 50 && d[1] == 1)
+                    {
+                        u = point{ 99, p[0] - 50 };
+                        r = point{ -1, 0 };
+                    }
+                    if(p[0] >= 50 && p[1] >= 50 && p[1] < 100 && d[0] == 1)
+                    {
+                        u = point{ p[1] + 50, 49 };
+                        r = point{ 0, -1 };
+                    }
+                    
+                    if(p[0] >= 50 && p[1] >= 100 && d[1] == 1)
+                    {
+                        u = point{ 49, p[0] + 100 };
+                        r = point{ -1, 0 };
+                    }
+                    if(p[0] < 50 && p[1] >= 150 && d[0] == 1)
+                    {
+                        u = point{ p[1] - 100, 149 };
+                        r = point{ 0, -1 };
+                    }
+                    
+                    if(p[0] < 50 && p[1] >= 100 && p[1] < 150 && d[0] == -1)
+                    {
+                        u = point{ 50, 149 - p[1] };
+                        r = point{ 1, 0 };
+                    }
+                    if(p[0] >= 50 && p[1] < 50 && d[0] == -1)
+                    {
+                        u = point{ 0, 149 - p[1] };
+                        r = point{ 1, 0 };
+                    }
+                    
+                    if(p[0] < 50 && p[1] >= 100 && p[1] < 150 && d[1] == -1)
+                    {
+                        u = point{ 50, p[0] + 50 };
+                        r = point{ 1, 0 };
+                    }
+                    if(p[0] >= 50 && p[1] >= 50 && p[1] < 100 && d[0] == -1)
+                    {
+                        u = point{ p[1] - 50, 100 };
+                        r = point{ 0, 1 };
+                    }
+                }
+                verify(m.has(u));
+                if(m[u])
+                {
+                    u = p;
+                    r = d;
+                }
+                p = u;
+                d = r;
+            }
+            if(n < size(c))
+            {
+                if(c[n] == 'L') d = point{ d[1], -d[0] };
+                if(c[n] == 'R') d = point{ -d[1], d[0] };
+            }
+            c = slice(c, min(n + 1, size(c)));
+        }
+        int f = 0;
+        if(d[0] == -1) f = 2;
+        if(d[1] == 1)  f = 1;
+        if(d[1] == -1) f = 3;
+        print("Password: %\n", 1000 * (p[1] + 1) + 4 * (p[0] + 1) + f);
+    }
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day21.txt"_s);
-        day21(in);
+        dstr in = filestr("day22.txt"_s);
+        day22(in);
     }
     catch(const error& e)
     {
