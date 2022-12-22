@@ -961,12 +961,83 @@ void day18(cstr in)
     print("Total exterior surface area: %\n", p1);
 }
 
+void day19(cstr in)
+{
+    auto blue = [](umm a, umm b, sta<umm, 2> c, sta<umm, 2> d, umm l)
+    {
+        umm ma = max(a, b, c[0], d[0]);
+        umm mb = c[1];
+        umm mc = d[1];
+        umm p = 0;
+        auto go = [&](auto f, sta<umm, 4> r, sta<umm, 4> m, umm t)
+        {
+            p = max(p, m[3]);
+            auto x = l - t;
+            if(!x) return;
+            // Check if this branch can be better than the highest.
+            umm y = (m[2] + x * r[2] + x * (x - 1) / 2) / d[1];
+            y = min(y, x);
+            if(p >= m[3] + x * (r[3] + y)) return;
+            // Buy geode robot.
+            if(m[0] >= d[0] && m[2] >= d[1]) f(f, r + sta<umm, 4>{ 0, 0, 0, 1 }, m - sta<umm, 4>{ d[0], 0, d[1], 0 } + r, t + 1);
+            // Buy obsidian robot.
+            if(m[0] >= c[0] && m[1] >= c[1] && r[2] < mc) f(f, r + sta<umm, 4>{ 0, 0, 1, 0 }, m - sta<umm, 4>{ c[0], c[1], 0, 0 } + r, t + 1);
+            // Buy clay robot.
+            if(m[0] >= b && r[1] < mb) f(f, r + sta<umm, 4>{ 0, 1, 0, 0 }, m - sta<umm, 4>{ b, 0, 0, 0 } + r, t + 1);
+            // Buy ore robot.
+            if(m[0] >= a && r[0] < ma) f(f, r + sta<umm, 4>{ 1, 0, 0, 0 }, m - sta<umm, 4>{ a, 0, 0, 0 } + r, t + 1);
+            // Do not buy anything.
+            f(f, r, m + r, t + 1); 
+        };
+        go(go, sta<umm, 4>{ 1, 0, 0, 0 }, sta<umm, 4>{ 0, 0, 0, 0 }, 0);
+        return p;
+    };
+    auto x = split(in, "\n"_s);
+    x = slice(x, 0, size(x) - 1);
+    dyn<thread> t;
+    u64 p = 0;
+    for(umm i = 0; i < size(x); i++)
+    {
+        t.add([&, i]
+              {
+                  auto y = split(x[i], " "_s);
+                  umm a = toint(y[6]);
+                  umm b = toint(y[12]);
+                  sta<umm, 2> c{ umm(toint(y[18])), umm(toint(y[21])) };
+                  sta<umm, 2> d{ umm(toint(y[27])), umm(toint(y[30])) };
+                  u64 r = blue(a, b, c, d, 24) * (i + 1);
+                  atomic_add(p, r);
+              });
+    }
+    each(t, [](auto& it){ it.join(); });
+    print("Quality level: %\n", p);
+    
+    t.remove(0, size(t));
+    u64 p1 = 1;
+    mutex mut;
+    for(umm i = 0; i < 3; i++)
+    {
+        t.add([&, i]
+              {
+                  auto y = split(x[i], " "_s);
+                  umm a = toint(y[6]);
+                  umm b = toint(y[12]);
+                  sta<umm, 2> c{ umm(toint(y[18])), umm(toint(y[21])) };
+                  sta<umm, 2> d{ umm(toint(y[27])), umm(toint(y[30])) };
+                  u64 r = blue(a, b, c, d, 32);
+                  mut.lock([&]{ p1 *= r; });
+              });
+    }
+    each(t, [](auto& it){ it.join(); });
+    print("Quality level: %\n", p1);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day18.txt"_s);
-        day18(in);
+        dstr in = filestr("day19.txt"_s);
+        day19(in);
     }
     catch(const error& e)
     {
