@@ -1069,12 +1069,80 @@ void day20(cstr in)
     print("Sum: %\n", p1 * 811589153);
 }
 
+void day21(cstr in)
+{
+    map<dstr, dstr> m;
+    split(in, "\n"_s, [&](auto it)
+          {
+              if(size(it))
+              {
+                  auto x = split(it, ": "_s);
+                  m.add(x[0], x[1]);
+              }
+          });
+    auto c = [&](auto f, cstr x)
+    {
+        auto s = split(m[x], " "_s);
+        if(size(s) == 1) return toint<s64>(s[0]);
+        else if(size(s) == 3)
+        {
+            if(s[1] == "+"_s) return f(f, s[0]) + f(f, s[2]);
+            if(s[1] == "-"_s) return f(f, s[0]) - f(f, s[2]);
+            if(s[1] == "*"_s) return f(f, s[0]) * f(f, s[2]);
+            if(s[1] == "/"_s) return f(f, s[0]) / f(f, s[2]);
+        }
+    };
+    print("Number: %\n", c(c, "root"_s));
+    
+    auto e = [&](auto f, cstr x)
+    {
+        auto s = split(m[x], " "_s);
+        if(size(s) == 1) return x == "humn"_s;
+        return f(f, s[0]) || f(f, s[2]);
+    };
+    
+    auto r = [&](auto f, cstr x, s64 y)
+    {
+        auto s = split(m[x], " "_s);
+        if(size(s) == 1) return y;
+        else if(size(s) == 3)
+        {
+            if(e(e, s[0]))
+            {
+                s64 v = c(c, s[2]);
+                if(s[1] == "+"_s) return f(f, s[0], y - v);
+                if(s[1] == "-"_s) return f(f, s[0], y + v);
+                if(s[1] == "*"_s) return f(f, s[0], y / v);
+                if(s[1] == "/"_s) return f(f, s[0], y * v);
+            }
+            else
+            {
+                s64 v = c(c, s[0]);
+                if(s[1] == "+"_s) return f(f, s[2], y - v);
+                if(s[1] == "-"_s) return f(f, s[2], v - y);
+                if(s[1] == "*"_s) return f(f, s[2], y / v);
+                if(s[1] == "/"_s) return f(f, s[2], v / y);
+            }
+            return s64();
+        }
+    };
+    auto s = split(m["root"_s], " "_s);
+    if(e(e, s[0]))
+    {
+        print("Number: %\n", r(r, s[0], c(c, s[2])));
+    }
+    else
+    {
+        print("Number: %\n", r(r, s[2], c(c, s[0])));
+    }
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day20.txt"_s);
-        day20(in);
+        dstr in = filestr("day21.txt"_s);
+        day21(in);
     }
     catch(const error& e)
     {
