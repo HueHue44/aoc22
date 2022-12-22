@@ -1036,22 +1036,37 @@ void day20(cstr in)
 {
     auto x = split(in, "\n"_s);
     x = slice(x, 0, size(x) - 1);
-    dyn<shr<int>> v;
-    each(x, [&](auto it){ v.add(shr<int>::make(toint<int>(it))); });
+    dyn<shr<s64>> v;
+    each(x, [&](auto it){ v.add(shr<s64>::make(toint<s64>(it))); });
+    shr<s64> z;
+    each(v, [&](const auto& it){ if(*it == 0) z = it; });
+    
     auto c = v;
-    shr<int> z;
     each(v, [&](const auto& it)
          {
-             if(*it == 0) z = it;
-             int i = int(find(c, it));
-             verify(i != -1);
+             s64 i = s64(find(c, it));
              c.remove(i);
-             int n = wrap(i + *it, 0, int(size(c) - 1));
+             s64 n = wrap<s64>(i + *it, 0, s64(size(c) - 1));
              c.insert(n, it);
          });
     umm i = find(c, z);
-    int p = *c[(i + 1000) % size(c)] + *c[(i + 2000) % size(c)] + *c[(i + 3000) % size(c)];
+    s64 p = *c[(i + 1000) % size(c)] + *c[(i + 2000) % size(c)] + *c[(i + 3000) % size(c)];
     print("Sum: %\n", p);
+    
+    c = v;
+    for(umm i = 0; i < 10; i++)
+    {
+        each(v, [&](const auto& it)
+             {
+                 s64 i = s64(find(c, it));
+                 c.remove(i);
+                 s64 n = wrap<s64>(i + (*it * 811589153), 0, s64(size(c) - 1));
+                 c.insert(n, it);
+             });
+    }
+    i = find(c, z);
+    s64 p1 = *c[(i + 1000) % size(c)] + *c[(i + 2000) % size(c)] + *c[(i + 3000) % size(c)];
+    print("Sum: %\n", p1 * 811589153);
 }
 
 int main()
