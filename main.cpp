@@ -1032,12 +1032,34 @@ void day19(cstr in)
     print("Quality level: %\n", p1);
 }
 
+void day20(cstr in)
+{
+    auto x = split(in, "\n"_s);
+    x = slice(x, 0, size(x) - 1);
+    dyn<shr<int>> v;
+    each(x, [&](auto it){ v.add(shr<int>::make(toint<int>(it))); });
+    auto c = v;
+    shr<int> z;
+    each(v, [&](const auto& it)
+         {
+             if(*it == 0) z = it;
+             int i = int(find(c, it));
+             verify(i != -1);
+             c.remove(i);
+             int n = wrap(i + *it, 0, int(size(c) - 1));
+             c.insert(n, it);
+         });
+    umm i = find(c, z);
+    int p = *c[(i + 1000) % size(c)] + *c[(i + 2000) % size(c)] + *c[(i + 3000) % size(c)];
+    print("Sum: %\n", p);
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day19.txt"_s);
-        day19(in);
+        dstr in = filestr("day20.txt"_s);
+        day20(in);
     }
     catch(const error& e)
     {
