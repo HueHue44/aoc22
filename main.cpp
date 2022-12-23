@@ -804,33 +804,61 @@ void day16(cstr in)
                   p.add(split(y[1], ", "_s));
               }
           });
-    umm y = 0;
-    auto visit = [&](auto f, umm vi, umm m, umm g = 0, const dyn<umm>& d = {}, umm pi = -1) -> void
     {
-        if(m == 0)
+        umm y = 0;
+        auto visit = [&](auto f, umm vi, umm m, umm g = 0, const dyn<umm>& d = {}, umm pi = -1)
         {
             if(g > y)
             {
                 y = g;
-                print("New highest: %\n", y);
+                print("New highest! %\n", y);
             }
-            return;
-        }
-        each(p[vi], [&](const auto& it)
-             {
-                 umm ni = find(v, it);
-                 if(ni != pi) f(f, ni, m - 1, g, d, vi);
-             });
-        if(find(d, vi) == -1)
+            if(m == 0) return;
+            each(p[vi], [&](const auto& it)
+                 {
+                     umm ni = find(v, it);
+                     if(ni != pi) f(f, ni, m - 1, g, d, vi);
+                 });
+            if(r[vi] && find(d, vi) == -1)
+            {
+                auto nd = d;
+                nd.add(vi);
+                f(f, vi, m - 1, g + (m - 1) * r[vi], nd, vi);
+            }
+        };
+        
+        visit(visit, find(v, "AA"_s), 30);
+        print("Total pressure released: %\n", y);
+    }
+    {
+        return;
+        umm y = 0;
+        auto visit = [&](auto f, umm vi, umm vi2, umm m, umm g = 0, const dyn<umm>& d = {}, umm pi = -1, umm pi2 = -1)
         {
-            auto nd = d;
-            nd.add(vi);
-            f(f, vi, m - 1, g + (m - 1) * r[vi], nd, vi);
-        }
-    };
-    
-    visit(visit, find(v, "AA"_s), 30);
-    print("Total pressure released: %\n", y);
+            if(g > y)
+            {
+                y = g;
+                print("New highest! %\n", y);
+            }
+            if(m == 0) return;
+            // Attempt to exit early.
+            
+            each(p[vi], [&](const auto& it)
+                 {
+                     umm ni = find(v, it);
+                     if(ni != pi) f(f, ni, vi2, m - 1, g, d, vi, vi2);
+                 });
+            if(r[vi] && find(d, vi) == -1)
+            {
+                auto nd = d;
+                nd.add(vi);
+                f(f, vi, m - 1, g + (m - 1) * r[vi], nd, vi, vi2);
+            }
+        };
+        
+        visit(visit, find(v, "AA"_s), find(v, "AA"_s), 26);
+        print("Total pressure released: %\n", y);
+    }
 }
 
 void day17(cstr in)
@@ -1305,8 +1333,8 @@ int main()
 {
     try
     {
-        dstr in = filestr("day22.txt"_s);
-        day22(in);
+        dstr in = filestr("day16.txt"_s);
+        day16(in);
     }
     catch(const error& e)
     {
