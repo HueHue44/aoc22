@@ -2,20 +2,12 @@
 
 void day1(cstr in)
 {
-    for(umm i = 0; i < 10; i++) print("%\n", int(in[i]));
-    split(in, "\n\n"_s, [&](auto it)
-    {
-        //print("----%----\n", it);
-    });
-    return;
     dyn<int> e;
     split(in, "\n\n"_s, [&](auto it)
           {
-              print("%\n", size(it));
               int c = 0;
               split(it, "\n"_s, [&](auto x)
                     {
-                        print("%, %\n", x, size(x));
                         if(size(x)) c += toint<int>(x);
                     });
               e.add(c);
@@ -986,17 +978,17 @@ void day19(cstr in)
             y = min(y, x);
             if(p >= m[3] + x * (r[3] + y)) return;
             // Buy geode robot.
-            if(m[0] >= d[0] && m[2] >= d[1]) f(f, r + sta<umm, 4>{ 0, 0, 0, 1 }, m - sta<umm, 4>{ d[0], 0, d[1], 0 } + r, t + 1);
+            if(m[0] >= d[0] && m[2] >= d[1]) f(f, r + sta(umm(0), umm(0), umm(0), umm(1)), m - sta(d[0], umm(0), d[1], umm(0)) + r, t + 1);
             // Buy obsidian robot.
-            if(m[0] >= c[0] && m[1] >= c[1] && r[2] < mc) f(f, r + sta<umm, 4>{ 0, 0, 1, 0 }, m - sta<umm, 4>{ c[0], c[1], 0, 0 } + r, t + 1);
+            if(m[0] >= c[0] && m[1] >= c[1] && r[2] < mc) f(f, r + sta(umm(0), umm(0), umm(1), umm(0)), m - sta(c[0], c[1], umm(0), umm(0)) + r, t + 1);
             // Buy clay robot.
-            if(m[0] >= b && r[1] < mb) f(f, r + sta<umm, 4>{ 0, 1, 0, 0 }, m - sta<umm, 4>{ b, 0, 0, 0 } + r, t + 1);
+            if(m[0] >= b && r[1] < mb) f(f, r + sta(umm(0), umm(1), umm(0), umm(0)), m - sta(b, umm(0), umm(0), umm(0)) + r, t + 1);
             // Buy ore robot.
-            if(m[0] >= a && r[0] < ma) f(f, r + sta<umm, 4>{ 1, 0, 0, 0 }, m - sta<umm, 4>{ a, 0, 0, 0 } + r, t + 1);
+            if(m[0] >= a && r[0] < ma) f(f, r + sta(umm(1), umm(0), umm(0), umm(0)), m - sta(a, umm(0), umm(0), umm(0)) + r, t + 1);
             // Do not buy anything.
             f(f, r, m + r, t + 1); 
         };
-        go(go, {1, 0, 0, 0}, {0, 0, 0, 0}, 0);
+        go(go, sta(umm(1), umm(0), umm(0), umm(0)), sta(umm(0), umm(0), umm(0), umm(0)), 0);
         return p;
     };
     auto x = split(in, "\n"_s);
@@ -1098,6 +1090,7 @@ void day21(cstr in)
             if(s[1] == "*"_s) return f(f, s[0]) * f(f, s[2]);
             if(s[1] == "/"_s) return f(f, s[0]) / f(f, s[2]);
         }
+        return s64();
     };
     print("Number: %\n", c(c, "root"_s));
     
@@ -1130,8 +1123,8 @@ void day21(cstr in)
                 if(s[1] == "*"_s) return f(f, s[2], y / v);
                 if(s[1] == "/"_s) return f(f, s[2], v / y);
             }
-            return s64();
         }
+        return s64();
     };
     auto s = split(m["root"_s], " "_s);
     if(e(e, s[0]))
@@ -1308,12 +1301,17 @@ void day22(cstr in)
     }
 }
 
+void day23(cstr in)
+{
+    
+}
+
 int main()
 {
     try
     {
-        dstr in = filestr("day1.txt"_s);
-        day1(in);
+        dstr in = filestr("day23.txt"_s);
+        day23(in);
     }
     catch(const error& e)
     {
