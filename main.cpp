@@ -2,12 +2,20 @@
 
 void day1(cstr in)
 {
+    for(umm i = 0; i < 10; i++) print("%\n", int(in[i]));
+    split(in, "\n\n"_s, [&](auto it)
+    {
+        //print("----%----\n", it);
+    });
+    return;
     dyn<int> e;
     split(in, "\n\n"_s, [&](auto it)
           {
+              print("%\n", size(it));
               int c = 0;
               split(it, "\n"_s, [&](auto x)
                     {
+                        print("%, %\n", x, size(x));
                         if(size(x)) c += toint<int>(x);
                     });
               e.add(c);
@@ -142,7 +150,7 @@ void day5(cstr in)
                   }
                   auto& x = s1[i0];
                   auto& y = s1[i1];
-                  y.place(slice(x, size(x) - n, n));
+                  y.add(slice(x, size(x) - n, n));
                   x.remove(size(x) - n, n);
               }
           });
@@ -214,7 +222,7 @@ void day7(cstr in)
                           }
                           else
                           {
-                              d.place(x[2]);
+                              d.add(x[2]);
                               d.add('/');
                           }
                           if(find(a, d) == -1)
@@ -320,14 +328,14 @@ void day9(cstr in)
 {
     {
         dyn<sta<int, 2>> v;
-        sta h = {{ 0, 0 }};
-        sta t = {{ 0, 0 }};
+        sta h(0, 0);
+        sta t(0, 0);
         v.add(t);
         split(in, "\n"_s, [&](auto it)
               {
                   if(!size(it)) return;
                   auto x = split(it, " "_s);
-                  sta m = {{0, 0}};
+                  sta m(0, 0);
                   if(x[0] == "L"_s) m[0] -= 1;
                   if(x[0] == "R"_s) m[0] += 1;
                   if(x[0] == "D"_s) m[1] -= 1;
@@ -337,10 +345,10 @@ void day9(cstr in)
                   {
                       h += m;
                       auto d = h - t;
-                      if(d[0] < -1) t = h + sta{{ 1, 0 }};
-                      if(d[0] > 1)  t = h - sta{{ 1, 0 }};
-                      if(d[1] < -1) t = h + sta{{ 0, 1 }};
-                      if(d[1] > 1)  t = h - sta{{ 0, 1 }};
+                      if(d[0] < -1) t = h + sta(1, 0);
+                      if(d[0] > 1)  t = h - sta(1, 0);
+                      if(d[1] < -1) t = h + sta(0, 1);
+                      if(d[1] > 1)  t = h - sta(0, 1);
                       if(find(v, t) == -1) v.add(t);
                   }
               });
@@ -348,13 +356,13 @@ void day9(cstr in)
     }
     {
         dyn<sta<int, 2>> v;
-        sta<sta<int, 2>, 10> r{};
+        sta<sta<int, 2>, 10> r;
         v.add(r[size(r) - 1]);
         split(in, "\n"_s, [&](auto it)
               {
                   if(!size(it)) return;
                   auto x = split(it, " "_s);
-                  sta m = {{0, 0}};
+                  sta m(0, 0);
                   if(x[0] == "L"_s) m[0] -= 1;
                   if(x[0] == "R"_s) m[0] += 1;
                   if(x[0] == "D"_s) m[1] -= 1;
@@ -374,10 +382,10 @@ void day9(cstr in)
                           }
                           else
                           {
-                              if(d[0] < -1) r[j] = r[j - 1] + sta{{ 1, 0 }};
-                              if(d[0] > 1)  r[j] = r[j - 1] - sta{{ 1, 0 }};
-                              if(d[1] < -1) r[j] = r[j - 1] + sta{{ 0, 1 }};
-                              if(d[1] > 1)  r[j] = r[j - 1] - sta{{ 0, 1 }};
+                              if(d[0] < -1) r[j] = r[j - 1] + sta(1, 0);
+                              if(d[0] > 1)  r[j] = r[j - 1] - sta(1, 0);
+                              if(d[1] < -1) r[j] = r[j - 1] + sta(0, 1);
+                              if(d[1] > 1)  r[j] = r[j - 1] - sta(0, 1);
                           }
                       }
                       if(find(v, r[size(r) - 1]) == -1) v.add(r[size(r) - 1]);
@@ -530,7 +538,7 @@ void day12(cstr in)
         umm w = size(g[0]);
         umm h = size(g);
         dyn<sta<umm, 4>> q;
-        q.add({{ x, y, 'a', 0 }});
+        q.add(sta(x, y, umm('a'), umm(0)));
         umm p = (umm)-1;
         while(size(q))
         {
@@ -545,10 +553,10 @@ void day12(cstr in)
                     break;
                 }
                 g[it[1]][it[0]]= '~';
-                q.add({{ it[0] - 1, it[1], d, it[3] + 1 }});
-                q.add({{ it[0] + 1, it[1], d, it[3] + 1 }});
-                q.add({{ it[0], it[1] - 1, d, it[3] + 1 }});
-                q.add({{ it[0], it[1] + 1, d, it[3] + 1 }});
+                q.add(sta(it[0] - 1, it[1], d, it[3] + 1));
+                q.add(sta(it[0] + 1, it[1], d, it[3] + 1));
+                q.add(sta(it[0], it[1] - 1, d, it[3] + 1));
+                q.add(sta(it[0], it[1] + 1, d, it[3] + 1));
             }
         }
         return p;
@@ -719,7 +727,7 @@ void day15(cstr in)
             {
                 int x0 = s[i][0] - d;
                 int x1 = s[i][0] + d;
-                r.add({{ x0, x1 }});
+                r.add(sta(x0, x1));
             }
         }
         for(umm i = 0; i < size(r); i++)
@@ -756,7 +764,7 @@ void day15(cstr in)
             {
                 int x0 = s[i][0] - d;
                 int x1 = s[i][0] + d;
-                r.add({{ x0, x1 }});
+                r.add(sta(x0, x1));
             }
         }
         for(umm i = 0; i < size(r); i++)
@@ -830,47 +838,18 @@ void day16(cstr in)
         visit(visit, find(v, "AA"_s), 30);
         print("Total pressure released: %\n", y);
     }
-    {
-        return;
-        umm y = 0;
-        auto visit = [&](auto f, umm vi, umm vi2, umm m, umm g = 0, const dyn<umm>& d = {}, umm pi = -1, umm pi2 = -1)
-        {
-            if(g > y)
-            {
-                y = g;
-                print("New highest! %\n", y);
-            }
-            if(m == 0) return;
-            // Attempt to exit early.
-            
-            each(p[vi], [&](const auto& it)
-                 {
-                     umm ni = find(v, it);
-                     if(ni != pi) f(f, ni, vi2, m - 1, g, d, vi, vi2);
-                 });
-            if(r[vi] && find(d, vi) == -1)
-            {
-                auto nd = d;
-                nd.add(vi);
-                f(f, vi, m - 1, g + (m - 1) * r[vi], nd, vi, vi2);
-            }
-        };
-        
-        visit(visit, find(v, "AA"_s), find(v, "AA"_s), 26);
-        print("Total pressure released: %\n", y);
-    }
 }
 
 void day17(cstr in)
 {
     using point = sta<s64, 2>;
-    dyn<sta<s64, 7>> g(umm(100000));
+    dyn g = dyn<sta<s64, 7>>::with(umm(100000));
     dyn<dyn<point>> r;
-    r.add(mdyn(point{ 0, 0 }, point{ 1, 0 }, point{ 2, 0 }, point{ 3, 0 }));
-    r.add(mdyn(point{ 1, 0 }, point{ 0, 1 }, point{ 1, 1 }, point{ 2, 1 }, point{ 1, 2 }));
-    r.add(mdyn(point{ 0, 0 }, point{ 1, 0 }, point{ 2, 0 }, point{ 2, 1 }, point{ 2, 2 }));
-    r.add(mdyn(point{ 0, 0 }, point{ 0, 1 }, point{ 0, 2 }, point{ 0, 3 }));
-    r.add(mdyn(point{ 0, 0 }, point{ 1, 0 }, point{ 0, 1 }, point{ 1, 1 }));
+    r.add(dyn(point{ 0, 0 }, point{ 1, 0 }, point{ 2, 0 }, point{ 3, 0 }));
+    r.add(dyn(point{ 1, 0 }, point{ 0, 1 }, point{ 1, 1 }, point{ 2, 1 }, point{ 1, 2 }));
+    r.add(dyn(point{ 0, 0 }, point{ 1, 0 }, point{ 2, 0 }, point{ 2, 1 }, point{ 2, 2 }));
+    r.add(dyn(point{ 0, 0 }, point{ 0, 1 }, point{ 0, 2 }, point{ 0, 3 }));
+    r.add(dyn(point{ 0, 0 }, point{ 1, 0 }, point{ 0, 1 }, point{ 1, 1 }));
     s64 h = 0;
     s64 p = 0;
     s64 d = 0;
@@ -938,7 +917,7 @@ void day18(cstr in)
     umm p = 0;
     each(c, [&](auto it)
          {
-             auto x = it.get<0>();
+             auto x = get<0>(it);
              p += !c.has(x + point{  1,  0,  0 });
              p += !c.has(x + point{ -1,  0,  0 });
              p += !c.has(x + point{  0,  1,  0 });
@@ -978,7 +957,7 @@ void day18(cstr in)
     umm p1 = 0;
     each(c, [&](auto it)
          {
-             auto x = it.get<0>();
+             auto x = get<0>(it);
              p1 += !f(x + point{  1,  0,  0 });
              p1 += !f(x + point{ -1,  0,  0 });
              p1 += !f(x + point{  0,  1,  0 });
@@ -1017,7 +996,7 @@ void day19(cstr in)
             // Do not buy anything.
             f(f, r, m + r, t + 1); 
         };
-        go(go, sta<umm, 4>{ 1, 0, 0, 0 }, sta<umm, 4>{ 0, 0, 0, 0 }, 0);
+        go(go, {1, 0, 0, 0}, {0, 0, 0, 0}, 0);
         return p;
     };
     auto x = split(in, "\n"_s);
@@ -1026,16 +1005,16 @@ void day19(cstr in)
     u64 p = 0;
     for(umm i = 0; i < size(x); i++)
     {
-        t.add([&, i]
-              {
-                  auto y = split(x[i], " "_s);
-                  umm a = toint(y[6]);
-                  umm b = toint(y[12]);
-                  sta<umm, 2> c{ umm(toint(y[18])), umm(toint(y[21])) };
-                  sta<umm, 2> d{ umm(toint(y[27])), umm(toint(y[30])) };
-                  u64 r = blue(a, b, c, d, 24) * (i + 1);
-                  atomic_add(p, r);
-              });
+        t.add(thread([&, i]
+        {
+            auto y = split(x[i], " "_s);
+            umm a = toint(y[6]);
+            umm b = toint(y[12]);
+            sta<umm, 2> c{ umm(toint(y[18])), umm(toint(y[21])) };
+            sta<umm, 2> d{ umm(toint(y[27])), umm(toint(y[30])) };
+            u64 r = blue(a, b, c, d, 24) * (i + 1);
+            atomic_add(p, r);
+        }));
     }
     each(t, [](auto& it){ it.join(); });
     print("Quality level: %\n", p);
@@ -1045,16 +1024,16 @@ void day19(cstr in)
     mutex mut;
     for(umm i = 0; i < 3; i++)
     {
-        t.add([&, i]
-              {
-                  auto y = split(x[i], " "_s);
-                  umm a = toint(y[6]);
-                  umm b = toint(y[12]);
-                  sta<umm, 2> c{ umm(toint(y[18])), umm(toint(y[21])) };
-                  sta<umm, 2> d{ umm(toint(y[27])), umm(toint(y[30])) };
-                  u64 r = blue(a, b, c, d, 32);
-                  mut.lock([&]{ p1 *= r; });
-              });
+        t.add(thread([&, i]
+        {
+            auto y = split(x[i], " "_s);
+            umm a = toint(y[6]);
+            umm b = toint(y[12]);
+            sta<umm, 2> c{ umm(toint(y[18])), umm(toint(y[21])) };
+            sta<umm, 2> d{ umm(toint(y[27])), umm(toint(y[30])) };
+            u64 r = blue(a, b, c, d, 32);
+            mut.lock([&]{ p1 *= r; });
+        }));
     }
     each(t, [](auto& it){ it.join(); });
     print("Quality level: %\n", p1);
@@ -1105,7 +1084,7 @@ void day21(cstr in)
               if(size(it))
               {
                   auto x = split(it, ": "_s);
-                  m.add(x[0], x[1]);
+                  m.add(tup(x[0], x[1]));
               }
           });
     auto c = [&](auto f, cstr x)
@@ -1333,8 +1312,8 @@ int main()
 {
     try
     {
-        dstr in = filestr("day16.txt"_s);
-        day16(in);
+        dstr in = filestr("day1.txt"_s);
+        day1(in);
     }
     catch(const error& e)
     {
